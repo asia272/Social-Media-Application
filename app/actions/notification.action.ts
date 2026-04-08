@@ -68,3 +68,19 @@ export async function markAsReadNotifications(notificationIds: string[]) {
         return { success: false };
     }
 }
+export async function getUnreadNotificationsCount() {
+    try {
+        const dbUserId = await getDbUserId();
+        if (!dbUserId) return null
+
+        return await prisma.notification.count({
+            where: {
+                userId: dbUserId,
+                read: false,
+            },
+        });
+    } catch (error) {
+        throw new Error("Faild to get count")
+    }
+
+}

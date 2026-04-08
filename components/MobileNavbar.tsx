@@ -15,6 +15,7 @@ import { useState } from "react";
 import { useAuth, SignInButton, SignOutButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import NotificationBadge from "./NotificationBadge";
 
 
 function MobileNavbar() {
@@ -58,7 +59,10 @@ function MobileNavbar() {
               <>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
                   <Link href="/notifications">
-                    <BellIcon className="w-4 h-4" />
+                    <div className="relative">
+                      <BellIcon className="w-4 h-4" />
+                      <NotificationBadge />
+                    </div>
                     Notifications
                   </Link>
                 </Button>
