@@ -3,8 +3,8 @@ import ProfilePageClient from "@/components/ProfilePageClient";
 import { notFound } from "next/navigation";
 
 const ProfilePage = async ({ params }: { params: { username: string } }) => {
-    const data = await params
-    const user = await getProfileByUsername(data.username)
+    const param = await params
+    const user = await getProfileByUsername(param.username)
     if (!user) notFound();
 
     const [posts, likedPosts, isCurrentUserFollowing] = await Promise.all([

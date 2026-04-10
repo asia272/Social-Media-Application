@@ -7,7 +7,7 @@ import FollowButton from "./FollowButton";
 async function WhotoFolow() {
     const users = await getRandomUsers();
 
-    if (users.length === 0) return null;
+    if (users?.length === 0) return null;
     return (
         <Card>
             <CardHeader>
@@ -15,7 +15,7 @@ async function WhotoFolow() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {users.map((user) => (
+                    {users?.map((user) => (
                         <div key={user.id} className="flex gap-2 items-center justify-between ">
                             <div className="flex items-center gap-1">
                                 <Link href={`/profile/${user.username}`}>

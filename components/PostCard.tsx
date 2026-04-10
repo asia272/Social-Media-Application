@@ -16,7 +16,7 @@ import { DeleteAlertDialog } from './DeleteAlertDialog';
 type Posts = Awaited<ReturnType<typeof getPosts>>
 type Post = Posts[0]
 
-function PostCard ({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
+function PostCard({ post, dbUserId }: { post: Post; dbUserId: string | null }) {
     const { user } = useUser()
 
     const [newComment, setNewComment] = useState("")
@@ -26,6 +26,8 @@ function PostCard ({ post, dbUserId }: { post: Post; dbUserId: string | null }) 
     const [hasLiked, setHasLiked] = useState(post.likes.some((like) => like.userId === dbUserId))
     const [optimisticLikes, setOptimisticLikes] = useState(post._count.likes);
     const [showComments, setShowComments] = useState(false);
+
+  
 
     const handleLike = async (postId: string) => {
         if (isLiking) return
@@ -111,8 +113,9 @@ function PostCard ({ post, dbUserId }: { post: Post; dbUserId: string | null }) 
                         <div className="rounded-lg overflow-hidden">
                             <img src={post.image} alt="Post content" className="w-full h-auto object-cover" />
                         </div>
-                    )}
 
+                    )}
+            
                     {/* LIKE & COMMENT BUTTONS */}
                     <div className="flex items-center pt-2 space-x-4">
                         {user ? (

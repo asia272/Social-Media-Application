@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { ImageIcon, Loader2, Loader2Icon, SendIcon } from "lucide-react";
 import { createPost } from "@/app/actions/post.action";
 import toast from "react-hot-toast";
+import ImageUpload from "./ImageUpload";
 
 
 const CreatePost = () => {
@@ -19,13 +20,20 @@ const CreatePost = () => {
     const [showImageUpload, setShowImageUpload] = useState(false);
 
 
+
+
     //server action
     const handleSubmit = async () => {
+
+
         if (!content.trim() && !image) return;
+        console.log("My post image is here:", image)
+
 
         setIsPosting(true);
         try {
             const result = await createPost(content, image)
+
             if (result.success) {
                 setContent("")
                 setImage("")
@@ -57,13 +65,15 @@ const CreatePost = () => {
                     </div>
                 </div>
 
-                {/* todo image upload */}
+                {/* image upload */}
                 {(showImageUpload || image) && (
-                    <div>
-                        {/* image uploader part is done here later */}
+                    <div className="border rounded-lg p-4">
+                        <ImageUpload
+                            value={image}
+                            onChange={setImage}
+                        />
                     </div>
                 )}
-
                 <div className="flex items-center justify-between border-t pt-4">
                     <div className="flex space-x-2">
                         <Button
