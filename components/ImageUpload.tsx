@@ -1,84 +1,43 @@
 "use client";
 
-import {  X } from "lucide-react";
-import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import toast from "react-hot-toast";
+import { UploadDropzone } from "@/lib/uploadthing";
+import { XIcon } from "lucide-react";
 
-interface Props {
-  value: string;
+interface ImageUploadProps {
   onChange: (url: string) => void;
+  value: string;
+  endpoint: "postImage";
 }
 
-export default function ImageUpload({ value, onChange }: Props) {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleUpload = async (file: File) => {
-    try {
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        onChange(data.url);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Upload failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function ImageUpload({ endpoint, onChange, value }: ImageUploadProps) {
   if (value) {
     return (
-      <div className="relative w-40 h-40">
+      <div className="relative size-40">
         <img
           src={value}
-          className="w-40 h-40 object-cover rounded-md"
+          alt="Upload"
+          className="rounded-md size-40 object-cover"
         />
-
-        <Button
-          type="button"
+        <button
           onClick={() => onChange("")}
-          className="absolute top-0 right-0 px-2"
-          variant="destructive"
+          className="absolute top-0 right-0 p-1 bg-red-500 rounded-full shadow-sm"
+          type="button"
         >
-           <X className="w-4 h-4" />
-        </Button>
+          <XIcon className="h-4 w-4 text-white" />
+        </button>
       </div>
     );
   }
-
   return (
-    <div>
-      <input
-        type="file"
-        hidden
-        ref={fileInputRef}
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleUpload(file);
-        }}
-      />
-
-      <Button
-        type="button"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={loading}
-      >
-        {loading ? "Uploading..." : "Choose Image"}
-      </Button>
-    </div>
+    <UploadDropzone
+      endpoint={endpoint}
+      onClientUploadComplete={(res) => {
+        onChange(res?.[0].url);
+      }}
+      onUploadError={(error: Error) => {
+        console.log(error);
+      }}
+    />
   );
 }
+export default ImageUpload;
