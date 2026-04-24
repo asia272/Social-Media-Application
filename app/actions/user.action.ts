@@ -15,36 +15,26 @@ const userId = authResult.userId;
             return [];
         }
         //2    Check if User exist is DB
+const email = clerkUser.emailAddresses[0].emailAddress;
 
-        const existingUser = await prisma.user.findUnique({
-            where: {
-                clerkId: clerkUser.id
-            }
-        })
-        if (existingUser) {
-            return await prisma.user.update({
-                where: { id: existingUser.id },
-                data: {
-                    clerkId: clerkUser.id,
-                    name: `${clerkUser.firstName || ""}  ${clerkUser?.lastName || ""}`,
-                    username: clerkUser.username ?? clerkUser?.emailAddresses[0].emailAddress.split("@")[0],
-                    email: clerkUser.emailAddresses[0].emailAddress,
-                    image: clerkUser.imageUrl
-                }
-            })
-
-        }
-        // 3 If not exist then create
-        const dbUser = await prisma.user.create({
-            data: {
-                clerkId: clerkUser.id,
-                name: `${clerkUser.firstName || ""}  ${clerkUser?.lastName || ""}`,
-                username: clerkUser.username ?? clerkUser?.emailAddresses[0].emailAddress.split("@")[0],
-                email: clerkUser.emailAddresses[0].emailAddress,
-                image: clerkUser.imageUrl
-            }
-        }
-        )
+const dbUser = await prisma.user.upsert({
+  where: {
+    email: email, // Use email as the unique identifier for upsert
+  },
+  update: {
+    clerkId: clerkUser.id,
+    name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
+    username: clerkUser.username ?? email.split("@")[0],
+    image: clerkUser.imageUrl,
+  },
+  create: {
+    clerkId: clerkUser.id,
+    name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
+    username: clerkUser.username ?? email.split("@")[0],
+    email: email,
+    image: clerkUser.imageUrl,
+  },
+});
         return dbUser;
     } catch (error) {
         console.log("Error in syncUser", error)
@@ -56,7 +46,7 @@ export async function getUserByClerkId(clerkId: string) {
 
     return await prisma.user.findUnique({
         where: {
-            clerkId,
+            clerkId:clerkId
         }, include: {
             _count: {
                 select:
@@ -73,7 +63,6 @@ export async function getDbUserId() {
     const { userId: clerkId } = await auth();
 
     if (!clerkId) throw new Error("Unauthorized");
-
     const user = await getUserByClerkId(clerkId);
     if (!user) throw new Error("User not found");
     return user.id
