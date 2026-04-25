@@ -99,7 +99,6 @@ export async function getRandomUsers() {
                     }
                 }
             },
-            take: 3,
         })
         return randomUsers;
     } catch (error) {
