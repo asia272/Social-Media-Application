@@ -18,7 +18,7 @@ import Link from "next/link";
 import NotificationBadge from "./NotificationBadge";
 
 
-function MobileNavbar() {
+function MobileNavbar({ user }: { user: any }) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { isSignedIn } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -67,7 +67,9 @@ function MobileNavbar() {
                   </Link>
                 </Button>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
-                  <Link href="/profile">
+       <Link
+                                 href={`/profile/${user.username ?? user.email.split("@")[0]}`}
+                             >
                     <UserIcon className="w-4 h-4" />
                     Profile
                   </Link>
