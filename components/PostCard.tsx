@@ -250,21 +250,35 @@ useEffect(() => {
                     >
                       {/* LEFT SIDE */}
                       <div className="flex space-x-3 flex-1">
-                        <Avatar className="size-8">
-                          <AvatarImage
-                            src={comment.author.image ?? "/avatar.png"}
-                          />
-                        </Avatar>
+                        <Link
+                          href={`/profile/${comment.author.username}`}
+                          className="font-semibold truncate"
+                        >
+                          <Avatar className="size-8">
+                            <AvatarImage
+                              src={comment.author.image ?? "/avatar.png"}
+                            />
+                          </Avatar>
+                        </Link>
 
                         <div className="flex-1">
                           <div className="flex flex-wrap items-center gap-2 text-sm">
-                            <span className="font-medium">
+                            <Link
+                              href={`/profile/${comment.author.username}`}
+                              className="font-medium"
+                            >
                               {comment.author.name}
-                            </span>
-                            <span className="text-muted-foreground">
+                            </Link>
+
+                            <Link
+                              href={`/profile/${comment.author.username}`}
+                              className="text-muted-foreground "
+                            >
                               @{comment.author.username}
-                            </span>
+                            </Link>
+
                             <span className="text-muted-foreground">·</span>
+
                             <span className="text-muted-foreground">
                               {formatDistanceToNow(new Date(comment.createdAt))}{" "}
                               ago
