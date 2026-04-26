@@ -4,37 +4,28 @@ import WhoToFollow from "@/components/WhoToFollow";
 import { currentUser } from "@clerk/nextjs/server";
 import { getPosts } from "./actions/post.action";
 import { getDbUserId } from "./actions/user.action";
-import UnAuthenticatedSidebar from "@/components/UnauthenticatedSidebar ";
 
 export default async function Home() {
   const user = await currentUser();
 
-if (!user?.id) {
-  return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="text-center space-y-4">
-        {/* Desktop text only */}
-        <h2 className="hidden lg:block text-2xl font-semibold">
-          Please login first
-        </h2>
-
-        {/* Mobile + tablet card */}
-        <div className="lg:hidden">
-          <UnAuthenticatedSidebar />
-        </div>
-      </div>
-    </div>
-  );
-}
   const posts = await getPosts();
-  const dbUserId = await getDbUserId();
 
-  
+  let dbUserId = null;
+
+  if (user?.id) {
+    try {
+      dbUserId = await getDbUserId();
+    } catch (error) {
+      console.log("DB user not ready yet");
+    }
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+      {/* MAIN FEED */}
       <div className="lg:col-span-6">
-        {user ? <CreatePost /> : null}
+        {/* ONLY SHOW CREATE POST IF LOGGED IN */}
+        {user?.id && <CreatePost />}
 
         <div className="space-y-6">
           {posts.map((post) => (
@@ -43,8 +34,9 @@ if (!user?.id) {
         </div>
       </div>
 
+      {/* SIDEBAR */}
       <div className="hidden lg:block lg:col-span-4 sticky top-20">
-        <WhoToFollow />
+        {user?.id && <WhoToFollow />}
       </div>
     </div>
   );

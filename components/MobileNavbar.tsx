@@ -77,7 +77,7 @@ useEffect(() => {
                 </Button>
                 <Button variant="ghost" className="flex items-center gap-3 justify-start" asChild>
        <Link
-                                 href={`/profile/${user.username ?? user.email.split("@")[0]}`}
+                                 href={`/profile/${user?.username ?? user?.email.split("@")[0]}`}
                              >
                     <UserIcon className="w-4 h-4" />
                     Profile

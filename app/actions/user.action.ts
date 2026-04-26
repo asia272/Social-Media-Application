@@ -3,44 +3,38 @@ import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
-
 export async function syncUser() {
-    try {
-        const clerkUser = await currentUser();
-        // const userId = await auth();
-        const authResult = await auth();
-const userId = authResult.userId;
-        // 1 Checconst clerkId = authResult.userId;k is user authunticated  
-        if (!clerkUser || !userId) {
-            return [];
-        }
-        //2    Check if User exist is DB
-const email = clerkUser.emailAddresses[0].emailAddress;
+  try {
+    const clerkUser = await currentUser();
+    const { userId } = await auth();
 
-const dbUser = await prisma.user.upsert({
-  where: {
-    email: email, // Use email as the unique identifier for upsert
-  },
-  update: {
-    clerkId: clerkUser.id,
-    name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
-    username: clerkUser.username ?? email.split("@")[0],
-    image: clerkUser.imageUrl,
-  },
-  create: {
-    clerkId: clerkUser.id,
-    name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
-    username: clerkUser.username ?? email.split("@")[0],
-    email: email,
-    image: clerkUser.imageUrl,
-  },
-});
-        return dbUser;
-    } catch (error) {
-        console.log("Error in syncUser", error)
-    }
+    if (!clerkUser || !userId) return null;
 
+    const email = clerkUser.emailAddresses[0].emailAddress;
 
+    const dbUser = await prisma.user.upsert({
+      where: { email },
+      update: {
+        clerkId: clerkUser.id,
+        name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
+        username: clerkUser.username ?? email.split("@")[0],
+        image: clerkUser.imageUrl,
+      },
+      create: {
+        clerkId: clerkUser.id,
+        name: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`,
+        username: clerkUser.username ?? email.split("@")[0],
+        email,
+        image: clerkUser.imageUrl,
+      },
+    });
+
+    return dbUser;
+  } catch (error) {
+    console.log("syncUser failed:", error);
+
+    return null;
+  }
 }
 export async function getUserByClerkId(clerkId: string) {
 
@@ -60,12 +54,18 @@ export async function getUserByClerkId(clerkId: string) {
     })
 }
 export async function getDbUserId() {
+  try {
     const { userId: clerkId } = await auth();
 
-    if (!clerkId) throw new Error("Unauthorized");
+    if (!clerkId) return null;
+
     const user = await getUserByClerkId(clerkId);
-    if (!user) throw new Error("User not found");
-    return user.id
+
+    return user?.id || null;
+  } catch (error) {
+    console.log("getDbUserId error:", error);
+    return null;
+  }
 }
 export async function getRandomUsers() {
     try {
@@ -158,5 +158,6 @@ export async function toggleFollow(targetUserId: string) {
 
         console.log("error in toggleFollow", error)
         return { success: false, error: "Error toggling follow" }
+        
     }
 }

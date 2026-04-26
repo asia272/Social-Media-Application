@@ -12,12 +12,17 @@ import { Card, CardContent } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 
 const CreatePost = () => {
-  const { user } = useUser(); //get user
+  const { user , isLoaded} = useUser(); //get user
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
   const [isPosting, setIsPosting] = useState(false);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+
+if (!isLoaded) return null;
+if (!user) return null;
+
   //server action
   const handleSubmit = async () => {
     if (!content.trim() && !image) return;
